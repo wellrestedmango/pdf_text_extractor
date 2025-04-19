@@ -14,7 +14,7 @@ args = parser.parse_args()
 src_dir = args.src
 dst_dir = args.dst
 
-search_terms = ["social", "Social", "media", "Media", "Mastodon", "mastodon"]
+search_terms = ["media", "Media", "Mastodon", "mastodon", "social", "Social"]
 
 interesting_files = {}
 failed_files = []
@@ -30,8 +30,8 @@ for p in glob.glob('**', recursive=True, root_dir=src_dir):
         file_path = f"{os.path.join(src_dir, p)}"
         print(file_path)
         text = ""
+        found_terms = []
         try:
-            found_terms = []
             doc = PdfReader(file_path)  # open a document
             for page in range(0, len(doc.pages)):  # iterate the document pages
                 curr_page = doc.pages[page]
@@ -40,7 +40,6 @@ for p in glob.glob('**', recursive=True, root_dir=src_dir):
                 if term in text:
                     print(f"Found {term} in {p}")
                     found_terms.append(term)
-                    break
                 else:
                     print("huge bust")
             if not found_terms:
@@ -55,7 +54,8 @@ for p in glob.glob('**', recursive=True, root_dir=src_dir):
             failed_files.append(p)
             failed_files_count += 1
 
-print(interesting_files)
+for key, value in interesting_files.items():
+    print(f'{key} : {value}')
 print(f'Number of failed files: {failed_files_count}')
 print(f'Number of boring files: {found_boring}')
 print(f'Number of interesting files: {found_interesting}')
