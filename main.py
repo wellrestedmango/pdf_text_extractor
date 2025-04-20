@@ -14,7 +14,8 @@ args = parser.parse_args()
 src_dir = args.src
 dst_dir = args.dst
 
-search_terms = ["media", "Media", "Mastodon", "mastodon", "social", "Social"]
+#search terms go here
+search_terms = ["foo","bar"]
 
 interesting_files = {}
 failed_files = []
@@ -22,7 +23,7 @@ failed_files = []
 failed_files_count = 0
 found_boring = 0
 found_interesting = 0
-
+crawled_files = 0
 
 
 for p in glob.glob('**', recursive=True, root_dir=src_dir):
@@ -32,10 +33,12 @@ for p in glob.glob('**', recursive=True, root_dir=src_dir):
         text = ""
         found_terms = []
         try:
-            doc = PdfReader(file_path)  # open a document
+            doc = PdfReader(file_path, strict=False)  # open a document
             for page in range(0, len(doc.pages)):  # iterate the document pages
                 curr_page = doc.pages[page]
                 text += curr_page.extract_text()# get plain text (is in UTF-8)
+            crawled_files += 1
+            print(crawled_files)
             for term in search_terms:
                 if term in text:
                     print(f"Found {term} in {p}")
@@ -48,7 +51,6 @@ for p in glob.glob('**', recursive=True, root_dir=src_dir):
             else:
                 found_interesting += 1
                 interesting_files.update({p:found_terms})
-                print("still working Eric, don't worry")
         except:
             print("failed")
             failed_files.append(p)
@@ -59,6 +61,14 @@ for key, value in interesting_files.items():
 print(f'Number of failed files: {failed_files_count}')
 print(f'Number of boring files: {found_boring}')
 print(f'Number of interesting files: {found_interesting}')
+
+# This will eventually change to dst 
+fout = dst_dir
+fo = open(fout, "w")
+
+for k, v in interesting_files.items():
+    fo.write(str(k) + ' >>> '+ str(v) + '\n\n')
+fo.close()
 
 
 
